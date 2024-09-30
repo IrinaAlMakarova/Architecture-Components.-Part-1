@@ -4,11 +4,13 @@ import android.net.Uri
 import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -38,6 +40,7 @@ private val noPhoto = PhotoModel()
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
+/*
 class PostViewModel @Inject constructor(
     private val repository: PostRepository,
     auth: AppAuth,
@@ -59,6 +62,14 @@ class PostViewModel @Inject constructor(
                     posts.map { it.copy(ownedByMe = it.authorId == myId) }
                 }
         }.flowOn(Dispatchers.Default)
+*/
+
+class PostViewModel @Inject constructor(
+    private val repository: PostRepository,
+) : ViewModel() {
+    val data: Flow<PagingData<Post>> = repository
+        .data
+        .cachedIn(viewModelScope)
 
     private val _dataState = MutableLiveData<FeedModelState>()
     val dataState: LiveData<FeedModelState>
